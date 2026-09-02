@@ -1,23 +1,69 @@
 "use client";
 
-import { FormEvent } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { ArrowUpRight, Check, Copy } from "lucide-react";
+
+const WHATSAPP_NUMBER = "256775207695";
+const CONTACT_EMAIL = "breashsupplies@gmail.com";
 
 export function QuoteForm() {
+  const [sent, setSent] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [enquiryText, setEnquiryText] = useState("");
+  const [mailtoHref, setMailtoHref] = useState("");
+  const [whatsappHref, setWhatsappHref] = useState("");
+
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const subject = encodeURIComponent(`Website enquiry from ${form.get("name")}`);
-    const body = encodeURIComponent([
-      `Name: ${form.get("name")}`,
+    const name = String(form.get("name") ?? "");
+    const text = [
+      `Name: ${name}`,
       `Organisation: ${form.get("organisation")}`,
       `Phone: ${form.get("phone")}`,
       `Email: ${form.get("email")}`,
       `Product category: ${form.get("category")}`,
       "",
       String(form.get("message")),
-    ].join("\n"));
-    window.location.href = `mailto:breashsupplies@gmail.com?subject=${subject}&body=${body}`;
+    ].join("\n");
+
+    const subject = `Website enquiry from ${name}`;
+    const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+    const whatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`${subject}\n\n${text}`)}`;
+
+    setEnquiryText(text);
+    setMailtoHref(mailto);
+    setWhatsappHref(whatsapp);
+    setSent(true);
+    window.location.href = mailto;
+  }
+
+  async function copyEnquiry() {
+    try {
+      await navigator.clipboard.writeText(enquiryText);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  if (sent) {
+    return (
+      <div className="quote-form">
+        <h2>Enquiry prepared</h2>
+        <p>Your email app should now be opening with the enquiry ready to review and send. If nothing opened, use one of these instead.</p>
+        <div className="quote-form-fallback">
+          <a className="button button-outline" href={mailtoHref}>Open email app <ArrowUpRight size={18} /></a>
+          <a className="button button-outline" href={whatsappHref} target="_blank" rel="noreferrer">Send via WhatsApp</a>
+          <button type="button" className="text-link" onClick={copyEnquiry}>
+            {copied ? <><Check size={16} /> Copied</> : <><Copy size={16} /> Copy enquiry text</>}
+          </button>
+        </div>
+        <pre className="quote-form-preview">{enquiryText}</pre>
+        <button type="button" className="text-link" onClick={() => setSent(false)}>Edit and resend</button>
+      </div>
+    );
   }
 
   return (

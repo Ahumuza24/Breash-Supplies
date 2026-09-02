@@ -6,6 +6,10 @@ import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+const AUTOPLAY_MS = 5500;
+const CROSSFADE_S = 1;
+const ZOOM_SCALE = 1.12;
+
 const slides = [
   { image: "/images/hero-hospital.webp", kicker: "Medical equipment", title: <>Reliable equipment.<br />Better healthcare.</>, body: "Quality medical equipment and dependable support for hospitals, clinics and healthcare organisations across Uganda." },
   { image: "/images/hero-lab.webp", kicker: "Laboratory solutions", title: <>Precision starts with<br />what you trust.</>, body: "Laboratory equipment, test kits, reagents and consumables selected to support accurate, efficient workflows." },
@@ -21,7 +25,7 @@ export function Hero() {
 
   useEffect(() => {
     if (paused) return;
-    const timer = window.setInterval(() => setActive(current => (current + 1) % slides.length), 6500);
+    const timer = window.setInterval(() => setActive(current => (current + 1) % slides.length), AUTOPLAY_MS);
     return () => window.clearInterval(timer);
   }, [paused]);
 
@@ -31,18 +35,21 @@ export function Hero() {
     if (!image || !copy) return;
 
     const previous = previousSlide.current === null ? null : imagesRef.current[previousSlide.current];
+    const textEls = Array.from(copy.children) as HTMLElement[];
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    gsap.killTweensOf([...imagesRef.current.filter(Boolean), copy]);
+    gsap.killTweensOf([...imagesRef.current.filter(Boolean), ...textEls]);
 
     if (reduceMotion) {
       gsap.set(imagesRef.current, { autoAlpha: 0, scale: 1 });
-      gsap.set([image, copy], { autoAlpha: 1, y: 0 });
+      gsap.set(image, { autoAlpha: 1 });
+      gsap.set(textEls, { autoAlpha: 1, y: 0 });
     } else {
       const timeline = gsap.timeline();
-      if (previous && previous !== image) timeline.to(previous, { autoAlpha: 0, scale: 1.03, duration: 1.15, ease: "power2.inOut" }, 0);
+      if (previous && previous !== image) timeline.to(previous, { autoAlpha: 0, duration: CROSSFADE_S, ease: "sine.inOut" }, 0);
       timeline
-        .fromTo(image, { autoAlpha: 0, scale: 1.09 }, { autoAlpha: 1, scale: 1, duration: 1.5, ease: "power2.out" }, 0)
-        .fromTo(copy, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.18);
+        .fromTo(image, { autoAlpha: 0 }, { autoAlpha: 1, duration: CROSSFADE_S, ease: "sine.inOut" }, 0)
+        .fromTo(image, { scale: 1 }, { scale: ZOOM_SCALE, duration: AUTOPLAY_MS / 1000 + CROSSFADE_S, ease: "sine.out" }, 0)
+        .fromTo(textEls, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out", stagger: 0.12 }, 0.3);
     }
 
     previousSlide.current = active;
@@ -50,7 +57,7 @@ export function Hero() {
 
   return (
     <section className="hero" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-      <div className="hero-images" aria-hidden="true">{slides.map((slide, index) => <Image ref={node => { imagesRef.current[index] = node; }} src={slide.image} alt="" fill sizes="100vw" priority={index === 0} key={slide.image} />)}</div>
+      <div className="hero-images" aria-hidden="true">{slides.map((slide, index) => <Image ref={node => { imagesRef.current[index] = node; }} src={slide.image} alt="" fill sizes="100vw" priority key={slide.image} />)}</div>
       <div className="hero-scrim" />
       <div className="site-shell hero-inner">
         <div className="hero-copy" ref={copyRef}>
@@ -58,7 +65,6 @@ export function Hero() {
           <h1>{slides[active].title}</h1><p>{slides[active].body}</p>
           <div className="hero-actions"><Link className="button button-cyan" href="/contact">Request a quote <ArrowUpRight size={18} /></Link><Link className="button button-ghost" href="/products">Explore products</Link></div>
         </div>
-        
       </div>
     </section>
   );

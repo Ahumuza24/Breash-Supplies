@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Reveal } from "../components/Reveal";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default function AboutPage() {
     <main>
       <section className="page-hero">
         <div className="site-shell page-hero-inner">
-          <div><h2>A dependable partner in healthcare delivery.</h2></div>
+          <div><h1>A dependable partner in healthcare delivery.</h1></div>
           <p>We make it easier for healthcare organisations to access the equipment, consumables and support they need to provide better patient care.</p>
         </div>
       </section>
@@ -34,7 +35,13 @@ export default function AboutPage() {
               <p>By combining responsive service with a strong commitment to quality, we aim to build lasting relationships with every organisation we serve.</p>
             </Reveal>
           </div>
-          
+
+          <Reveal className="about-gallery" delay={80}>
+            <div className="about-gallery-item about-gallery-hospital"><Image src="/images/hero-hospital.webp" alt="Nurse preparing hospital equipment supplied by Breash Supplies" fill sizes="(max-width: 720px) 33vw, 20vw" /></div>
+            <div className="about-gallery-item about-gallery-lab"><Image src="/images/hero-lab.webp" alt="Laboratory technician using diagnostic equipment from Breash Supplies" fill sizes="(max-width: 720px) 33vw, 20vw" /></div>
+            <div className="about-gallery-item about-gallery-supplies"><Image src="/images/hero-supplies.webp" alt="Medical consumables and supplies prepared by a Breash Supplies healthcare partner" fill sizes="(max-width: 720px) 33vw, 20vw" /></div>
+          </Reveal>
+
           <div className="values-grid">
             {values.map(([number, title, copy], index) => <Reveal className="value-card" delay={index * 65} key={title}><span>{number}</span><h3>{title}</h3><p>{copy}</p></Reveal>)}
           </div>

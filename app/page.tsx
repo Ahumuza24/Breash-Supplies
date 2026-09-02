@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -91,7 +92,8 @@ export default function Home() {
       <section className="section support-section">
         <div className="site-shell support-grid">
           <Reveal className="support-visual">
-            <div className="support-number">03</div>
+            <Image src="/images/hero-hospital.webp" alt="Breash Supplies technician installing and maintaining hospital equipment" fill sizes="(max-width: 720px) 100vw, 50vw" />
+            <div className="support-visual-scrim" />
             <div className="support-caption"><Wrench size={20} /><span>Installation<br />Training<br />Maintenance</span></div>
           </Reveal>
           <Reveal className="support-content" delay={100}>

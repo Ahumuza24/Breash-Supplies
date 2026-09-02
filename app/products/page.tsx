@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Boxes, HeartPulse, ImageOff, Microscope, ShieldCheck, Stethoscope } from "lucide-react";
 import { Reveal } from "../components/Reveal";
 
 export const metadata: Metadata = {
@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   description: "Explore medical consumables, diagnostic and hospital equipment, laboratory supplies, PPE and after-sales support from Breash Supplies.",
 };
 
-const products = [
-  { number: "01", title: "Medical consumables", copy: "Essential supplies that support routine procedures, patient care and infection prevention.", tags: ["Gloves", "Syringes", "Gauze", "Bandages", "Disinfectants", "Masks"] },
-  { number: "02", title: "Diagnostic equipment", copy: "Dependable tools that support accurate, efficient patient assessment in everyday clinical settings.", tags: ["Thermometers", "Stethoscopes", "Blood pressure monitors", "Glucometers"] },
-  { number: "03", title: "Hospital equipment", copy: "Equipment for patient mobility, bedside care, respiratory support and facility readiness.", tags: ["Patient beds", "Wheelchairs", "Stretchers", "Oxygen concentrators"] },
-  { number: "04", title: "Laboratory supplies", copy: "Equipment and consumables for reliable testing and efficient laboratory workflows.", tags: ["Microscopes", "Test kits", "Reagents", "Lab consumables"] },
-  { number: "05", title: "Personal protective equipment", copy: "Dependable protection for healthcare professionals working in demanding environments.", tags: ["Coveralls", "Face shields", "Respirators"] },
+const categories = [
+  { number: "01", title: "Medical consumables", copy: "Essential supplies that support routine procedures, patient care and infection prevention.", icon: Boxes, items: ["Gloves", "Syringes", "Gauze", "Bandages", "Disinfectants", "Masks"] },
+  { number: "02", title: "Diagnostic equipment", copy: "Dependable tools that support accurate, efficient patient assessment in everyday clinical settings.", icon: Stethoscope, items: ["Thermometers", "Stethoscopes", "Blood pressure monitors", "Glucometers"] },
+  { number: "03", title: "Hospital equipment", copy: "Equipment for patient mobility, bedside care, respiratory support and facility readiness.", icon: HeartPulse, items: ["Patient beds", "Wheelchairs", "Stretchers", "Oxygen concentrators"] },
+  { number: "04", title: "Laboratory supplies", copy: "Equipment and consumables for reliable testing and efficient laboratory workflows.", icon: Microscope, items: ["Microscopes", "Test kits", "Reagents", "Lab consumables"] },
+  { number: "05", title: "Personal protective equipment", copy: "Dependable protection for healthcare professionals working in demanding environments.", icon: ShieldCheck, items: ["Coveralls", "Face shields", "Respirators"] },
 ];
 
 const services = [
@@ -35,10 +35,29 @@ export default function ProductsPage() {
       <section className="catalog-section">
         <div className="site-shell">
           <Reveal className="section-heading-row"><div><span className="eyebrow">Our product range</span><h2>Source with clarity.<br />Order with confidence.</h2></div><p>Need an item that is not listed? Share your specifications with our team and we will help you identify suitable options.</p></Reveal>
-          <div className="catalog-list">
-            {products.map((product, index) => <Reveal className="catalog-item" delay={index * 55} key={product.title}>
-              <span>{product.number}</span><h2>{product.title}</h2><div className="catalog-details"><p>{product.copy}</p><div className="product-tags">{product.tags.map(tag => <span key={tag}>{tag}</span>)}</div></div>
-            </Reveal>)}
+
+          <div className="category-list">
+            {categories.map((category, categoryIndex) => {
+              const Icon = category.icon;
+              return (
+                <Reveal className="category-block" delay={categoryIndex * 40} key={category.title}>
+                  <div className="category-block-header">
+                    <div className="category-block-title"><Icon size={22} strokeWidth={1.5} /><span className="product-number">{category.number}</span><h3>{category.title}</h3></div>
+                    <p>{category.copy}</p>
+                  </div>
+                  <div className="product-item-grid">
+                    {category.items.map(item => (
+                      <div className="product-item-card" key={item}>
+                        <div className="product-item-image">
+                          <div className="product-item-placeholder"><ImageOff size={20} strokeWidth={1.4} /></div>
+                        </div>
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Reveal>
+              );
+            })}
           </div>
         </div>
       </section>
